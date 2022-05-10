@@ -3,6 +3,7 @@ module.exports = mongoose => {
         "advisor",
         mongoose.Schema(
             {
+                title: String,
                 // implement model for advisor response
             },
             { timestamps: true }
