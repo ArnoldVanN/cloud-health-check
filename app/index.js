@@ -1,45 +1,60 @@
 #!/usr/bin/env node
+const db = require('./db')
+const RecommendationModel = db.recommendationModel;
 
 // read in env settings
 require('dotenv').config();
 
-const yargs = require('yargs');
+const { ClientSecretCredential } = require('@azure/identity')
+const { AdvisorManagementClient } = require('@azure/arm-advisor');
 
-const fetch = require('./fetch');
-const auth = require('./auth');
-
-const options = yargs
-    .usage('Usage: --op <operation_name>')
-    .option('op', { alias: 'operation', describe: 'operation name', type: 'string', demandOption: true })
-    .argv;
+/**
+ *  Authenticate with client secret.
+ */
+const credential = new ClientSecretCredential(
+    process.env.TENANT_ID,
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET
+);
 
 async function main() {
-    console.log(`You have selected: ${options.op}`);
+    db.mongoose.connect(db.uri)
 
-    switch (yargs.argv['op']) {
-        case 'getUsers':
+    const subscriptionId = "c5525cab-32a0-4ad4-ae63-bcfe2e44a31e"
+    const client = new AdvisorManagementClient(credential, subscriptionId)
 
-            try {
-                const authResponse = await auth.getToken(auth.tokenRequest);
-                const users = await fetch.callApi(auth.apiConfig.uri, authResponse.accessToken);
-                console.log(users);
-                // insert response into mongodb
-            } catch (error) {
-                console.log(error);
-            }
-
-            break;
-        default:
-            console.log('Select a Graph operation first');
-            break;
+    // Generate recommendations
+    client.recommendations.generate();
+    console.log('Getting list of recommendations')
+    // Get list of recommendations from azure advisor
+    allRecommendations = client.recommendations.list();
+    for await (const singleRec of allRecommendations) {
+        const recommendation = new RecommendationModel({
+            category: singleRec.category,
+            impact: singleRec.impact,
+            impactedField: singleRec.impactedField,
+            impactedValue: singleRec.impactedValue,
+            lastUpdated: singleRec.lastUpdated,
+            recommendationTypeId: singleRec.recommendationTypeId,
+            risk: singleRec.risk,
+            shortDescription: singleRec.shortDescription,
+            description: singleRec.description,
+            label: singleRec.label,
+            learnMoreLink: singleRec.learnMoreLink,
+            potentialBenefits: singleRec.potentialBenefits
+        });
+        // Save in the database
+        await recommendation.save(recommendation);
+        console.log('Saved Recommendations to Atlas')
     }
+    gracefulExit();
 };
 
 main();
 
 var gracefulExit = function () {
-    mongoose.connection.close(function () {
-        console.log('Mongoose default connection with DB :' + db_server + ' is disconnected through app termination');
+    db.mongoose.connection.close(function () {
+        console.log('Mongoose connection with DB is disconnected through app termination');
         process.exit(0);
     });
 }
