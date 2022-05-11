@@ -25,7 +25,7 @@ async function main() {
 
     // Generate recommendations
     client.recommendations.generate();
-
+    console.log('Getting list of recommendations')
     // Get list of recommendations from azure advisor
     allRecommendations = client.recommendations.list();
     for await (const singleRec of allRecommendations) {
@@ -45,6 +45,7 @@ async function main() {
         });
         // Save in the database
         await recommendation.save(recommendation);
+        console.log('Saved Recommendations to Atlas')
     }
     gracefulExit();
 };
