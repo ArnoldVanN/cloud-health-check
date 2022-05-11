@@ -2,22 +2,27 @@
 
 // read in env settings
 require('dotenv').config();
-require('@azure/identity')
 require('@azure/arm-advisor')
 
 const fetch = require('./fetch');
 const auth = require('./auth');
-const { DefaultAzureCredential } = require('@azure/identity');
+
+const { ClientSecretCredential } = require('@azure/identity')
 const { AdvisorManagementClient } = require('@azure/arm-advisor');
 
-async function handleRes(result) {
-    console.log(result)
-}
+/**
+ *  Authenticate with client secret.
+ */
+const credential = new ClientSecretCredential(
+    process.env.TENANT_ID,
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET
+);
 
 
 async function main() {
     const subscriptionId = "c5525cab-32a0-4ad4-ae63-bcfe2e44a31e"
-    const client = new AdvisorManagementClient(new DefaultAzureCredential(), subscriptionId)
+    const client = new AdvisorManagementClient(credential, subscriptionId)
 
     recommendations = client.recommendations.list()
     for await (const recommendation of recommendations) {
