@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ArnoldVanN/cloud-health-check#readme",
   "dependencies": {
     "@azure/arm-advisor": "^3.0.1",
+    "@azure/arm-security": "^5.0.0",
     "@azure/identity": "^2.0.4",
     "@azure/msal-node": "^1.9.0",
     "axios": "^0.27.2",
