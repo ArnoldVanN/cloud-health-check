@@ -1,6 +1,6 @@
 module.exports = mongoose => {
-    const Security = mongoose.model(
-        "Security",
+    const SecurityAssessment = mongoose.model(
+        "SecurityAssessment",
         mongoose.Schema(
             {
                 category: String,
@@ -9,5 +9,5 @@ module.exports = mongoose => {
             { timestamps: true }
         )
     );
-    return Security;
+    return SecurityAssessment;
 };

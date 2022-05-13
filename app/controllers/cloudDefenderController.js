@@ -3,18 +3,18 @@ const db = require('../db')
 
 const AssessmentModel = db.assessmentModel;
 
-exports.getAdvisor = async (subId, cred) => {
+exports.getAssessments = async (subId, cred) => {
     const client = new SecurityCenter(cred, subId)
-    assessments = client.assessments.list();
-    console.log(assessments)
-    // Generate recommendations
+    assessments = client.assessments.list(`/subscriptions/${subId}`);
+    // client.assessments.get()
     for await (const singleAssess of assessments) {
+        console.log(singleAssess)
         const assessment = new AssessmentModel({
-            //TODO
+            //TODO implement schema properties
         });
 
         // Save in the database
-        console.log('Saved Recommendations to Atlas')
+        console.log('Saved Security Assessments to Atlas')
         await assessment.save(assessment);
     }
 }

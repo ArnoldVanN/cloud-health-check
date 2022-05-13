@@ -1,4 +1,4 @@
 module.exports = {
     ...require("./advisorController"),
-    ...require("./securityController"),
+    ...require("./cloudDefenderController"),
 }

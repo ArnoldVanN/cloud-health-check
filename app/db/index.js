@@ -9,6 +9,6 @@ const db = {};
 db.mongoose = mongoose;
 db.uri = uri;
 db.recommendationModel = require("./models/advisor.model.js")(mongoose)
-db.assessmentModel = require("./models/assessment.model.js")(mongoose)
+db.assessmentModel = require("./models/cloudDefender.model.js")(mongoose)
 
 module.exports = db;

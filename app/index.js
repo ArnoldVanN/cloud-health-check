@@ -22,7 +22,8 @@ async function main() {
     db.mongoose.connect(db.uri)
     console.log('Opened connection to database')
 
-    await controllers.getAdvisor(subscriptionId, credential)
+    // await controllers.getAdvisor(subscriptionId, credential)
+    await controllers.getAssessments(subscriptionId, credential)
 
     gracefulExit();
 };
