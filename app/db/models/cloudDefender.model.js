@@ -3,8 +3,18 @@ module.exports = mongoose => {
         "SecurityAssessment",
         mongoose.Schema(
             {
-                category: String,
-
+                id: String,
+                displayName: String,
+                policyDefinitionId: String,
+                description: String,
+                remediationDescription: String,
+                categories: [String],
+                severity: String,
+                userImpact: String,
+                implementationEffort: String,
+                threats: [String],
+                preview: Boolean,
+                assessmentType: String
             },
             { timestamps: true }
         )

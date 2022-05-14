@@ -22,7 +22,9 @@ async function main() {
     db.mongoose.connect(db.uri)
     console.log('Opened connection to database')
 
-    // await controllers.getAdvisor(subscriptionId, credential)
+    // Collect recommendations from Azure Advisor
+    await controllers.getAdvisor(subscriptionId, credential)
+    // Collect security assessments from Azure Cloud Defender
     await controllers.getAssessments(subscriptionId, credential)
 
     gracefulExit();
