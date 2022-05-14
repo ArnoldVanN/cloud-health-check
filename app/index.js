@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 const db = require('./db')
-const RecommendationModel = db.recommendationModel;
+const controllers = require('./controllers')
 
 // read in env settings
 require('dotenv').config();
 
 const { ClientSecretCredential } = require('@azure/identity')
-const { AdvisorManagementClient } = require('@azure/arm-advisor');
+
+const subscriptionId = process.env.SUBSCRIPTION_ID
 
 /**
  *  Authenticate with client secret.
@@ -19,38 +20,15 @@ const credential = new ClientSecretCredential(
 
 async function main() {
     db.mongoose.connect(db.uri)
+    console.log('Opened connection to database')
 
-    const subscriptionId = "c5525cab-32a0-4ad4-ae63-bcfe2e44a31e"
-    const client = new AdvisorManagementClient(credential, subscriptionId)
+    // Collect recommendations from Azure Advisor
+    await controllers.getAdvisor(subscriptionId, credential)
+    // Collect security assessments from Azure Cloud Defender
+    await controllers.getAssessments(subscriptionId, credential)
 
-    // Generate recommendations
-    client.recommendations.generate();
-    console.log('Getting list of recommendations')
-    // Get list of recommendations from azure advisor
-    allRecommendations = client.recommendations.list();
-    for await (const singleRec of allRecommendations) {
-        const recommendation = new RecommendationModel({
-            category: singleRec.category,
-            impact: singleRec.impact,
-            impactedField: singleRec.impactedField,
-            impactedValue: singleRec.impactedValue,
-            lastUpdated: singleRec.lastUpdated,
-            recommendationTypeId: singleRec.recommendationTypeId,
-            risk: singleRec.risk,
-            shortDescription: singleRec.shortDescription,
-            description: singleRec.description,
-            label: singleRec.label,
-            learnMoreLink: singleRec.learnMoreLink,
-            potentialBenefits: singleRec.potentialBenefits
-        });
-        // Save in the database
-        await recommendation.save(recommendation);
-        console.log('Saved Recommendations to Atlas')
-    }
     gracefulExit();
 };
-
-main();
 
 var gracefulExit = function () {
     db.mongoose.connection.close(function () {
@@ -58,6 +36,8 @@ var gracefulExit = function () {
         process.exit(0);
     });
 }
+
+main();
 
 // If the Node process ends, close the Mongoose connection
 process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
