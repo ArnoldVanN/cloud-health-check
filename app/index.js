@@ -23,9 +23,11 @@ async function main() {
     console.log('Opened connection to database')
 
     // Collect recommendations from Azure Advisor
-    await controllers.getAdvisor(subscriptionId, credential)
+    // await controllers.getAdvisor(subscriptionId, credential)
     // Collect security assessments from Azure Cloud Defender
-    await controllers.getAssessments(subscriptionId, credential)
+    // await controllers.getAssessments(subscriptionId, credential)
+
+    await controllers.getResourceGraph(subscriptionId, credential)
 
     gracefulExit();
 };
