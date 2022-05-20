@@ -27,6 +27,7 @@ async function main() {
     // Collect security assessments from Azure Cloud Defender
     await controllers.getAssessments(subscriptionId, credential)
 
+    // Close DB connection and exit program
     gracefulExit();
 };
 
