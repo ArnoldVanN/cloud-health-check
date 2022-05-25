@@ -6,6 +6,7 @@ const controllers = require('./controllers')
 require('dotenv').config();
 
 const { ClientSecretCredential } = require('@azure/identity')
+const { ResourceGraphClient } = require("@azure/arm-resourcegraph");
 
 const subscriptionId = process.env.SUBSCRIPTION_ID
 
@@ -18,6 +19,18 @@ const credential = new ClientSecretCredential(
     process.env.CLIENT_SECRET
 );
 
+async function getSubscriptions(cred) {
+    const client = new ResourceGraphClient(cred);
+    const result = await client.resources(
+        {
+            query: 'resourcecontainers | where type == "microsoft.resources/subscriptions"'
+        },
+        { resultFormat: "table" }
+    );
+    console.log(result)
+    console.log("Subscription ID: " + result.data[0].subscriptionId)
+}
+
 async function main() {
     db.mongoose.connect(db.uri)
     console.log('Opened connection to database')
@@ -27,7 +40,8 @@ async function main() {
     // Collect security assessments from Azure Cloud Defender
     // await controllers.getAssessments(subscriptionId, credential)
 
-    await controllers.getResourceGraph(subscriptionId, credential)
+    // await controllers.getResourceGraph(subscriptionId, credential)
+    await getSubscriptions(credential)
 
     gracefulExit();
 };
