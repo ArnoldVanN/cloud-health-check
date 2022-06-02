@@ -28,8 +28,8 @@ exports.getAdvisor = async (subId, cred) => {
         });
 
         // Save in the database
-        console.log('Saved Recommendations to Atlas')
         await recommendation.save(recommendation);
     }
+    console.log('Saved Security Assessments to Atlas')
 }
 
