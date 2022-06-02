@@ -46,9 +46,11 @@ async function main() {
         await controllers.getAdvisor(subscriptionId, credential)
         // Collect security assessments from Azure Cloud Defender
         await controllers.getAssessments(subscriptionId, credential)
-
-        gracefulExit();
+        
+        db.mongoose.connection.close();
     }
+    // Close DB connection and exit program
+    gracefulExit();
 };
 
 var gracefulExit = function () {

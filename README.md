@@ -1,14 +1,17 @@
 # Cloud Health Check
 
-This Nodejs app is meant to pull data from multiple Azure services and store them in a database in JSON format.
+This is an app made in Node.js.
 
-
-### What data's being gathered?
-
-Some of the Azure services accessed to gether the information are: Azure Advisor, Azure Cloud Defender, Azure Resource Graph (WIP) and Azure Policy (WIP)
+It uses a managed identity to obtain Azure AD tokens when authenticating.
+After authentication, it pulls data from different sources including Azure Advisor and Azure Cloud Defender using their respective SDK's.
+Future possible sources to be added are: Azure Resource Graph.
 
 ### How to run
 
 After cloning the repo, run `npm install`.
 Send me a mail or a message on teams for the .env file.
 Run `node .`
+
+### Requirements
+- An Azure app registration with managed identity that has Read access to the required resources.
+- A MongoDB database. This will be changed to Azure Cosmos in the near future.
