@@ -8,8 +8,6 @@ require('dotenv').config();
 const { ClientSecretCredential } = require('@azure/identity')
 const { ResourceGraphClient } = require("@azure/arm-resourcegraph");
 
-const subscriptionId = process.env.SUBSCRIPTION_ID
-
 /**
  *  Authenticate with client secret.
  */
@@ -27,23 +25,30 @@ async function getSubscriptions(cred) {
         },
         { resultFormat: "table" }
     );
-    console.log(result)
-    console.log("Subscription ID: " + result.data[0].subscriptionId)
+
+    var subscriptionDatas = result.data;
+    var subscriptionIds = [];
+    for await (sub of subscriptionDatas) {
+        subscriptionIds.push(sub.subscriptionId)
+    }
+    return subscriptionIds;
 }
 
 async function main() {
-    db.mongoose.connect(db.uri)
     console.log('Opened connection to database')
+    var subscriptionIds = await getSubscriptions(credential)
 
-    // Collect recommendations from Azure Advisor
-    // await controllers.getAdvisor(subscriptionId, credential)
-    // Collect security assessments from Azure Cloud Defender
-    // await controllers.getAssessments(subscriptionId, credential)
+    for (subscriptionId of subscriptionIds) {
+        // Create new database for each subscription
+        const uri = `mongodb+srv://${process.env.ATLAS_USR}:${process.env.ATLAS_PWD}@cloudhealthcheckcluster.teisd.mongodb.net/${subscriptionId}?retryWrites=true&w=majority`;
+        db.mongoose.connect(uri)
+        // Collect recommendations from Azure Advisor
+        await controllers.getAdvisor(subscriptionId, credential)
+        // Collect security assessments from Azure Cloud Defender
+        await controllers.getAssessments(subscriptionId, credential)
 
-    // await controllers.getResourceGraph(subscriptionId, credential)
-    await getSubscriptions(credential)
-
-    gracefulExit();
+        gracefulExit();
+    }
 };
 
 var gracefulExit = function () {
