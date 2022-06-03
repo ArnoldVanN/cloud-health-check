@@ -2,9 +2,9 @@
 
 This is an app made in Node.js.
 
+
 It uses a managed identity to obtain Azure AD tokens when authenticating.
-After authentication, it pulls data from different sources including Azure Advisor and Azure Cloud Defender using their respective SDK's.
-Future possible sources to be added are: Azure Resource Graph.
+After authentication, it gets every subscription the app has access to and pulls data from different sources including Azure Advisor and Azure Cloud Defender using their respective SDK's.
 
 ### How to run
 

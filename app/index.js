@@ -6,8 +6,7 @@ const controllers = require('./controllers')
 require('dotenv').config();
 
 const { ClientSecretCredential } = require('@azure/identity')
-
-const subscriptionId = process.env.SUBSCRIPTION_ID
+const { ResourceGraphClient } = require("@azure/arm-resourcegraph");
 
 /**
  *  Authenticate with client secret.
@@ -18,15 +17,39 @@ const credential = new ClientSecretCredential(
     process.env.CLIENT_SECRET
 );
 
+// Query Azure Resource Graph for all subscriptions
+async function getSubscriptions(cred) {
+    const client = new ResourceGraphClient(cred);
+    const result = await client.resources(
+        {
+            query: 'resourcecontainers | where type == "microsoft.resources/subscriptions"'
+        },
+        { resultFormat: "table" }
+    );
+
+    var subscriptionDatas = result.data;
+    var subscriptionIds = [];
+    for await (sub of subscriptionDatas) {
+        subscriptionIds.push(sub.subscriptionId)
+    }
+    return subscriptionIds;
+}
+
 async function main() {
-    db.mongoose.connect(db.uri)
     console.log('Opened connection to database')
+    var subscriptionIds = await getSubscriptions(credential)
 
-    // Collect recommendations from Azure Advisor
-    await controllers.getAdvisor(subscriptionId, credential)
-    // Collect security assessments from Azure Cloud Defender
-    await controllers.getAssessments(subscriptionId, credential)
-
+    for (subscriptionId of subscriptionIds) {
+        // Create new database for each subscription
+        const uri = `mongodb+srv://${process.env.ATLAS_USR}:${process.env.ATLAS_PWD}@cloudhealthcheckcluster.teisd.mongodb.net/${subscriptionId}?retryWrites=true&w=majority`;
+        db.mongoose.connect(uri)
+        // Collect recommendations from Azure Advisor
+        await controllers.getAdvisor(subscriptionId, credential)
+        // Collect security assessments from Azure Cloud Defender
+        await controllers.getAssessments(subscriptionId, credential)
+        
+        db.mongoose.connection.close();
+    }
     // Close DB connection and exit program
     gracefulExit();
 };
