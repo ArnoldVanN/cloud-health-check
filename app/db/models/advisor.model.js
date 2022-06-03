@@ -1,3 +1,4 @@
+// This schema is based off the arm-advisor ResourceRecommendationBase class
 module.exports = mongoose => {
     const Recommendation = mongoose.model(
         "Recommendation",

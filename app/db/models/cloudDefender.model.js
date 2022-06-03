@@ -1,3 +1,4 @@
+// This schema is based off the arm-security SecurityAssessmentMetadataResponse class
 module.exports = mongoose => {
     const SecurityAssessment = mongoose.model(
         "SecurityAssessment",
