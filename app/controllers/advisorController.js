@@ -5,13 +5,13 @@ const RecommendationModel = db.recommendationModel;
 
 exports.getAdvisor = async (subId, cred) => {
     const client = new AdvisorManagementClient(cred, subId)
-
     // Generate recommendations
     client.recommendations.generate();
-    console.log('Getting list of recommendations')
+    console.log('Getting list of advisor recommendations for subscription: ' + subId)
     // Get list of recommendations from azure advisor
     allRecommendations = client.recommendations.list();
     for await (const singleRec of allRecommendations) {
+        // Create Recommendation Model
         const recommendation = new RecommendationModel({
             category: singleRec.category,
             impact: singleRec.impact,
@@ -26,10 +26,9 @@ exports.getAdvisor = async (subId, cred) => {
             learnMoreLink: singleRec.learnMoreLink,
             potentialBenefits: singleRec.potentialBenefits
         });
-
         // Save in the database
         await recommendation.save(recommendation);
     }
-    console.log('Saved Recommendations to Atlas')
+    console.log('Saved Advisor Recommendations to Atlas')
 }
 

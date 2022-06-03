@@ -17,6 +17,7 @@ const credential = new ClientSecretCredential(
     process.env.CLIENT_SECRET
 );
 
+// Query Azure Resource Graph for all subscriptions
 async function getSubscriptions(cred) {
     const client = new ResourceGraphClient(cred);
     const result = await client.resources(
