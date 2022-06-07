@@ -34,5 +34,6 @@ To build the image, make sure you have a .env file containing values for the fol
 `COSMOSDB_USER`, `COSMOSDB_PASSWORD`, `COSMOSDB_HOST` and `COSMOSDB_PORT`
 
 ### To be implemented
-A way to clear the databases before getting and saving the data again
+A way to clear the databases before getting and saving the data again.
+
 Automated deployment of this app
