@@ -39,15 +39,15 @@ async function main() {
     console.log('Opened connection to database')
     var subscriptionIds = await getSubscriptions(credential)
 
+    // Create new database for each subscription
     for (subscriptionId of subscriptionIds) {
-        // Create new database for each subscription
-        const uri = `mongodb+srv://${process.env.ATLAS_USR}:${process.env.ATLAS_PWD}@cloudhealthcheckcluster.teisd.mongodb.net/${subscriptionId}?retryWrites=true&w=majority`;
+        const uri = `mongodb://${process.env.COSMOSDB_USER}:${process.env.COSMOSDB_PASSWORD}@${process.env.COSMOSDB_HOST}:${process.env.COSMOSDB_PORT}/${subscriptionId}?ssl=true&retryWrites=false&w=majority`;
         db.mongoose.connect(uri)
         // Collect recommendations from Azure Advisor
         await controllers.getAdvisor(subscriptionId, credential)
         // Collect security assessments from Azure Cloud Defender
         await controllers.getAssessments(subscriptionId, credential)
-        
+
         db.mongoose.connection.close();
     }
     // Close DB connection and exit program
