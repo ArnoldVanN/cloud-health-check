@@ -15,7 +15,10 @@ module.exports = mongoose => {
                 implementationEffort: String,
                 threats: [String],
                 preview: Boolean,
-                assessmentType: String
+                assessmentType: String,
+                plannedDeprecationDate: String,
+                tactics: [String],
+                techniques: [String]
             },
             { timestamps: true }
         )

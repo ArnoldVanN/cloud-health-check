@@ -36,12 +36,12 @@ async function getSubscriptions(cred) {
 }
 
 async function main() {
-    console.log('Opened connection to database')
     var subscriptionIds = await getSubscriptions(credential)
 
     // Create new database for each subscription
     for (subscriptionId of subscriptionIds) {
         const uri = `mongodb://${process.env.COSMOSDB_USER}:${process.env.COSMOSDB_PASSWORD}@${process.env.COSMOSDB_HOST}:${process.env.COSMOSDB_PORT}/${subscriptionId}?ssl=true&retryWrites=false&w=majority`;
+        console.log('Opened connection to database')
         db.mongoose.connect(uri)
         // Collect recommendations from Azure Advisor
         await controllers.getAdvisor(subscriptionId, credential)
