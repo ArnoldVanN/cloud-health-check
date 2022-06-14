@@ -29,6 +29,6 @@ exports.getAdvisor = async (subId, cred) => {
         // Save in the database
         await recommendation.save(recommendation);
     }
-    console.log('Saved Advisor Recommendations to Atlas')
+    console.log('Saved Advisor Recommendations to database')
 }
 

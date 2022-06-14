@@ -33,6 +33,6 @@ exports.getAssessments = async (subId, cred) => {
         // Save in the database
         await assessment.save(assessment);
     }
-    console.log('Saved Security Assessments to Atlas')
+    console.log('Saved Security Assessments to database')
 }
 
