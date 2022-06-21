@@ -5,6 +5,7 @@ module.exports = mongoose => {
         mongoose.Schema(
             {
                 id: String,
+                name: String,
                 displayName: String,
                 policyDefinitionId: String,
                 description: String,

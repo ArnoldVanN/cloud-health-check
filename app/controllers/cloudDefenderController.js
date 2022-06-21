@@ -17,6 +17,7 @@ exports.getAssessments = async (subId, cred) => {
         // Create Assessment Model
         const assessment = new AssessmentModel({
             id: resourceId,
+            name: detailedAssessment.name,
             displayName: detailedAssessment.displayName,
             policyDefinitionId: detailedAssessment.policyDefinitionId,
             description: detailedAssessment.description,
